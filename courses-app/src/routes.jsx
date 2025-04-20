@@ -1,5 +1,6 @@
 import { Home, Profile, SignIn, SignUp } from "@/pages";
 import CoursesPage from "./pages/CoursesPage";
+import InterviewPrepPage from "./pages/InterviewPrepPage";
 
 export const routes = [
   {
@@ -14,28 +15,10 @@ export const routes = [
     element: <CoursesPage />
   },
   {
-    name: "test series",
-    href: "",
-    target: "_blank",
-    element: ""
-  },
-  {
-    name: "quiz",
-    href: "",
-    target: "_blank",
-    element: ""
-  },
-  {
-    name: "mcq",
-    href: "",
-    target: "_blank",
-    element: ""
-  },
-  {
     name: "interview prep",
     href: "",
-    target: "_blank",
-    element: ""
+    path: "/interviewprep",
+    element: <InterviewPrepPage />
   },
   {
     name: "packages",
