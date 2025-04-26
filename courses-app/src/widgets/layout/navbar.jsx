@@ -9,6 +9,8 @@ import {
   IconButton,
 } from "@material-tailwind/react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
+import GoogleSignInButton from "@/fiebase/GoogleAuthMenu";
+import GoogleAuthMenu from "@/fiebase/GoogleAuthMenu";
 
 export function Navbar({ brandName, routes, action }) {
   const [openNav, setOpenNav] = React.useState(false);
@@ -70,18 +72,12 @@ export function Navbar({ brandName, routes, action }) {
         </Link>
         <div className="hidden lg:block">{navList}</div>
         <div className="hidden gap-2 lg:flex">
-          <a
-            href="https://www.material-tailwind.com/blocks?ref=mtkr"
-            target="_blank"
-          >
-            <Button variant="text" size="sm" color="white" fullWidth>
-              Sign In with Google
-            </Button>
-          </a>
+          <GoogleAuthMenu />
           {React.cloneElement(action, {
             className: "hidden lg:inline-block",
           })}
         </div>
+
         <IconButton
           variant="text"
           size="sm"
