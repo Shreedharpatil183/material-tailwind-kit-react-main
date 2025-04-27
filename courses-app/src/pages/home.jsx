@@ -15,6 +15,8 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import CourseCard from "@/widgets/cards/CourseCard";
 import { FaLinkedin, FaInstagram, FaYoutube } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
+
 
 
 const featuresData = [
@@ -25,7 +27,7 @@ const featuresData = [
       "The CDAC CCAT Section A Covers General Aptitude and Computer Fundamentals ( Notes + Mock Test + Quiz + Live )",
     price: "₹799",
     oldPrice: "₹999",
-    link: "#",
+    link: "1",
   },
   {
     image: "/images/section-b.jpg",
@@ -34,7 +36,7 @@ const featuresData = [
       "The CDAC CCAT Section B focuses on C Programming, C++, Data Structures, OS & Networking, Big data & AI Basics.",
     price: "₹999",
     oldPrice: "₹1499",
-    link: "#",
+    link: "2",
   },
   {
     image: "/images/section-c.jpg",
@@ -43,7 +45,7 @@ const featuresData = [
       "CDAC CCAT Section C covers Computer Architecture, Digital Electronics, and Microprocessors.",
     price: "₹599",
     oldPrice: "₹799",
-    link: "#",
+    link: "3",
   }
 ];
 
@@ -103,6 +105,14 @@ const testimonials = [
 ];
 
 export function Home() {
+
+  const navigate = useNavigate();
+
+  const handleViewDetails = (course) => {
+  navigate("/course-details", { state: { course } });
+  };
+
+
   const sliderSettings = {
     dots: true,
     infinite: true,
@@ -144,12 +154,33 @@ export function Home() {
 
   
       {/* Features Section */}
-      <section className="-mt-32 bg-white px-4 pb-20 pt-4">
-        <div className="container mx-auto">
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {featuresData.map((item, index) => (
-            <FeatureCard key={index} {...item} />
-          ))}
+          <section className="-mt-32 bg-white px-4 pb-20 pt-4">
+            <div className="container mx-auto">
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {/* {featuresData.map((item, index) => (
+                <FeatureCard key={index} {...item} />
+              ))} */}
+                {featuresData.map((item, index) => (
+              <FeatureCard
+                key={index}
+                {...item}
+                onViewDetails={() => handleViewDetails({
+                  title: item.title,
+                  description: item.description,
+                  price: item.price,
+                  oldPrice: item.oldPrice,
+                  questions: [
+                  { title: "Product-Based Companies", sections: 33 },
+                  { title: "Service-Based Companies", sections: 13 },
+                  { title: "Data Analytics Companies", sections: 11 },
+                  { title: "BFSI (banking, financial services, and insurance) & BIG4", sections: 10 },
+                  { title: "Big Firms", sections: 12 },
+                  { title: "Best Tips & Links", sections: 2 }
+                ]
+
+                })}
+              />
+            ))}
         </div>
 
 
@@ -179,59 +210,6 @@ export function Home() {
               ))}
             </Slider>
           </div>
-
-          {/* Additional Section */}
-          {/* <div className="mt-32 flex flex-wrap items-center">
-            <div className="mx-auto -mt-8 w-full px-4 md:w-5/12">
-              <div className="mb-6 inline-flex h-16 w-16 items-center justify-center rounded-full bg-blue-gray-900 p-2 text-center shadow-lg">
-                <FingerPrintIcon className="h-8 w-8 text-white " />
-              </div>
-              <Typography
-                variant="h3"
-                className="mb-3 font-bold"
-                color="blue-gray"
-              >
-                Working with us is a pleasure
-              </Typography>
-              <Typography className="mb-8 font-normal text-blue-gray-500">
-                Don't let your uses guess by attaching tooltips and popoves to
-                any element. Just make sure you enable them first via
-                JavaScript.
-                <br />
-                <br />
-                The kit comes with three pre-built pages to help you get started
-                faster. You can change the text and images and you're good to
-                go. Just make sure you enable them first via JavaScript.
-              </Typography>
-              <Button variant="filled">read more</Button>
-            </div>
-            <div className="mx-auto mt-24 flex w-full justify-center px-4 md:w-4/12 lg:mt-0">
-              <Card className="shadow-lg border shadow-gray-500/10 rounded-lg">
-                <CardHeader floated={false} className="relative h-56">
-                  <img
-                    alt="Card Image"
-                    src="/img/teamwork.png"
-                    className="h-full w-full"
-                  />
-                </CardHeader>
-                <CardBody>
-                  <Typography variant="small" color="blue-gray" className="font-normal">Enterprise</Typography>
-                  <Typography
-                    variant="h5"
-                    color="blue-gray"
-                    className="mb-3 mt-2 font-bold"
-                  >
-                    Top Notch Services
-                  </Typography>
-                  <Typography className="font-normal text-blue-gray-500">
-                    The Arctic Ocean freezes every winter and much of the
-                    sea-ice then thaws every summer, and that process will
-                    continue whatever happens.
-                  </Typography>
-                </CardBody>
-              </Card>
-            </div>
-          </div> */}
         </div>
       </section>
 
