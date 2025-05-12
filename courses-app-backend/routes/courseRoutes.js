@@ -1,29 +1,119 @@
 import express from "express";
-import multer from "multer";
-import { getCourses, addCourse, updateCourse, deleteCourse } from "../controllers/courseController.js";
+import Course from "../models/Course.js";
+import path from "path";
+import fs from "fs";
 
 const router = express.Router();
 
-// Set up Multer storage
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, 'server/uploads/');
-  },
-  filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + '-' + file.originalname;
-    cb(null, uniqueSuffix);
+// Create a new course
+router.post("/", async (req, res) => {
+  try {
+    console.log(req.body);
+    console.log(req.files);
+    const { title, description, price, oldPrice, questions } = req.body;
+    let pdfPath = null;
+    let imagePath = null;
+
+    if (req.files && req.files.pdf) {
+      const pdf = req.files.pdf;
+      const uploadPath = path.join("uploads", pdf.name);
+      pdf.mv(uploadPath);
+      pdfPath = `/${uploadPath}`;
+      console.log(pdfPath);
+    }
+
+     if (req.files?.image) {
+      const image = req.files.image;
+      const imageUploadPath = path.join("uploads", image.name);
+      await image.mv(imageUploadPath);
+      imagePath = `/${imageUploadPath}`;
+    }
+
+    const newCourse = new Course({
+      title,
+      description,
+      price,
+      oldPrice,
+      questions: JSON.parse(questions),
+      pdfPath,
+      imagePath
+    });
+    const savedCourse = await newCourse.save();
+    res.status(201).json(savedCourse);
+    console.log(savedCourse);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: err.message });
   }
 });
 
-const upload = multer({ storage: storage });
+// Get all courses
+router.get("/", async (req, res) => {
+  try {
+    const courses = await Course.find();
+    res.json(courses);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
 
-// Course APIs
-router.get("/", getCourses);
+// Get a course by ID
+router.get("/:id", async (req, res) => {
+  try {
+    const course = await Course.findById(req.params.id);
+    res.json(course);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
 
-// Note: Now using 'upload.single' middleware for PDF file
-router.post("/", upload.single('pdf'), addCourse);
+// Update a course
+router.put("/:id", async (req, res) => {
+  try {
+    const { title, description, price, oldPrice, questions } = req.body;
+    const course = await Course.findById(req.params.id);
+    
+    if (!course) return res.status(404).json({ message: "Course not found" });
 
-router.put("/:id", upload.single('pdf'), updateCourse);
-router.delete("/:id", deleteCourse);
+    if (req.files && req.files.pdf) {
+      const pdf = req.files.pdf;
+      const uploadPath = path.join("uploads", pdf.name);
+      pdf.mv(uploadPath);
+      course.pdfPath = `/${uploadPath}`;
+    }
+
+    if (req.files?.image) {
+      const image = req.files.image;
+      const imageUploadPath = path.join("uploads", image.name);
+      await image.mv(imageUploadPath);
+      course.imagePath = `/${imageUploadPath}`;
+    }
+
+    course.title = title;
+    course.description = description;
+    course.price = price;
+    course.oldPrice = oldPrice;
+    course.questions = JSON.parse(questions);
+
+    const updated = await course.save();
+    res.json(updated);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// Delete a course
+router.delete("/:id", async (req, res) => {
+  try {
+    const course = await Course.findByIdAndDelete(req.params.id);
+    if (course?.pdfPath) {
+      const fullPath = path.join("uploads", path.basename(course.pdfPath));
+      if (fs.existsSync(fullPath)) fs.unlinkSync(fullPath);
+    }
+    res.json({ message: "Course deleted" });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
 
 export default router;
